@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DH-SK SITE — Games Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-cyan: #00f5ff;
+    --neon-orange: #ff6a00;
+    --neon-green: #39ff14;
+    --neon-pink: #ff0090;
+    --dark-bg: #050a10;
+    --card-bg: #0a1520;
+    --card-border: #1a2a3a;
+    --text-main: #e0f0ff;
+    --text-dim: #7a9ab5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ANIMATED BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(0,245,255,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,106,0,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(57,255,20,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* GRID LINES */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 48px 20px 32px;
+    border-bottom: 1px solid rgba(0,245,255,0.15);
+  }
+
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-orange), var(--neon-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 18px rgba(0,245,255,0.5));
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { filter: drop-shadow(0 0 18px rgba(0,245,255,0.5)); }
+    50% { filter: drop-shadow(0 0 35px rgba(0,245,255,0.9)) drop-shadow(0 0 60px rgba(255,106,0,0.3)); }
+  }
+
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.3);
+    color: var(--neon-cyan);
+    padding: 5px 16px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .badge.orange { border-color: rgba(255,106,0,0.4); color: var(--neon-orange); background: rgba(255,106,0,0.08); }
+  .badge.green  { border-color: rgba(57,255,20,0.4);  color: var(--neon-green);  background: rgba(57,255,20,0.08); }
+
+  /* ===== NAV TABS ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(5,10,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,245,255,0.1);
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.25s;
+    background: transparent;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+
+  .tab:hover {
+    color: var(--neon-cyan);
+    border-color: rgba(0,245,255,0.3);
+    background: rgba(0,245,255,0.06);
+  }
+
+  .tab.active {
+    color: var(--dark-bg);
+    background: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0,245,255,0.4);
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Section hidden/shown */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--neon-cyan);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,245,255,0.4), transparent);
+  }
+
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== GAME GRID ===== */
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* ===== GAME CARD ===== */
+  .game-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    position: relative;
+    animation: fadeInUp 0.5s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .game-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 12px 40px rgba(0,245,255,0.2), 0 0 0 1px rgba(0,245,255,0.15);
+  }
+
+  .game-card.action:hover { border-color: var(--neon-orange); box-shadow: 0 12px 40px rgba(255,106,0,0.2); }
+  .game-card.funny:hover  { border-color: var(--neon-pink);   box-shadow: 0 12px 40px rgba(255,0,144,0.2); }
+
+  /* Thumbnail area */
+  .game-thumb {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+  }
+
+  /* per-card accent colors */
+  .game-card.action .game-thumb { background: linear-gradient(135deg, #1a0800, #2a1000); }
+  .game-card.action .game-thumb::before { background: radial-gradient(circle at 50% 50%, #ff6a00, transparent 70%); opacity: 0.3; }
+  .game-card.funny  .game-thumb { background: linear-gradient(135deg, #0d001a, #1a0028); }
+  .game-card.funny  .game-thumb::before  { background: radial-gradient(circle at 50% 50%, #ff0090, transparent 70%); opacity: 0.3; }
+  .game-card.all    .game-thumb { background: linear-gradient(135deg, #001a10, #002820); }
+  .game-card.all    .game-thumb::before  { background: radial-gradient(circle at 50% 50%, #39ff14, transparent 70%); opacity: 0.3; }
+
+  .game-thumb .emoji { position: relative; z-index: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); transition: transform 0.3s; }
+  .game-card:hover .emoji { transform: scale(1.15) rotate(-5deg); }
+
+  /* Card info */
+  .game-info {
+    padding: 16px;
+  }
+
+  .game-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-main);
+    margin-bottom: 6px;
+  }
+
+  .game-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .game-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+
+  .tag-action { color: var(--neon-orange); border-color: rgba(255,106,0,0.4); background: rgba(255,106,0,0.08); }
+  .tag-funny  { color: var(--neon-pink);   border-color: rgba(255,0,144,0.4); background: rgba(255,0,144,0.08); }
+  .tag-mobile { color: var(--neon-cyan);   border-color: rgba(0,245,255,0.4); background: rgba(0,245,255,0.08); }
+  .tag-pc     { color: var(--neon-green);  border-color: rgba(57,255,20,0.4); background: rgba(57,255,20,0.08); }
+  .tag-both   { color: #ffdd57;            border-color: rgba(255,221,87,0.4); background: rgba(255,221,87,0.08); }
+  .tag-1p     { color: #c0c0ff;            border-color: rgba(192,192,255,0.4); background: rgba(192,192,255,0.08); }
+
+  .play-btn {
+    margin-left: auto;
+    background: var(--neon-cyan);
+    color: var(--dark-bg);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .play-btn:hover { background: #fff; box-shadow: 0 0 18px rgba(0,245,255,0.6); }
+  .game-card.action .play-btn { background: var(--neon-orange); }
+  .game-card.action .play-btn:hover { background: #ffaa55; box-shadow: 0 0 18px rgba(255,106,0,0.6); }
+  .game-card.funny  .play-btn { background: var(--neon-pink); }
+  .game-card.funny  .play-btn:hover { background: #ff66c4; box-shadow: 0 0 18px rgba(255,0,144,0.6); }
+
+  /* ===== FEATURED BANNER ===== */
+  .featured {
+    background: linear-gradient(135deg, rgba(0,245,255,0.07), rgba(255,106,0,0.07));
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .featured::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,245,255,0.15), transparent 70%);
+  }
+
+  .featured-icon { font-size: 5rem; flex-shrink: 0; }
+
+  .featured-text h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--neon-cyan);
+    margin-bottom: 8px;
+  }
+
+  .featured-text p { color: var(--text-dim); font-size: 1rem; line-height: 1.6; max-width: 500px; }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 20px 28px;
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card-bg);
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,245,255,0.15);
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-icon { font-size: 4rem; margin-bottom: 16px; }
+  .modal-title { font-family: 'Orbitron', monospace; font-size: 1.2rem; color: var(--neon-cyan); margin-bottom: 12px; }
+  .modal-desc  { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px; }
+
+  .modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-play-now {
+    background: var(--neon-cyan);
+    color: var(--dark-bg);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-play-now:hover { background: #fff; box-shadow: 0 0 24px rgba(0,245,255,0.6); }
+
+  .btn-close {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-close:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+
+  .modal-close-x {
+    position: absolute;
+    top: 14px; right: 18px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 1px solid rgba(0,245,255,0.1);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+  }
+
+  footer span { color: var(--neon-cyan); font-family: 'Orbitron', monospace; font-weight: 700; }
+
+  /* ===== SEARCH ===== */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    max-width: 400px;
+  }
+
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0,245,255,0.15); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .game-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .game-thumb { height: 110px; font-size: 3rem; }
+    .game-info { padding: 10px; }
+    .game-name { font-size: 0.7rem; }
+    .game-desc { display: none; }
+    .featured { flex-direction: column; padding: 20px; }
+    .stats-bar { gap: 10px; }
+    .stat-item { padding: 14px 16px; }
+    .stat-num { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">DH-SK SITE</div>
+  <div class="tagline">Your Ultimate Games Hub</div>
+  <div class="badges">
+    <span class="badge">📱 Mobile Ready</span>
+    <span class="badge orange">🖥️ PC Compatible</span>
+    <span class="badge green">🎮 1 Player</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <button class="tab active" onclick="showSection('home')">🏠 Home</button>
+  <button class="tab" onclick="showSection('action')">⚔️ Action</button>
+  <button class="tab" onclick="showSection('funny')">😂 Funny</button>
+  <button class="tab" onclick="showSection('all')">🎮 All Games</button>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ====== HOME SECTION ====== -->
+  <section id="home" class="section active">
+    <div class="featured">
+      <div class="featured-icon">🎮</div>
+      <div class="featured-text">
+        <h2>Welcome to DH-SK SITE</h2>
+        <p>The best collection of free single-player action games and hilarious funny games — playable on your phone AND your PC. No downloads. Just click and play!</p>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-num">30+</div><div class="stat-label">Games</div></div>
+      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free</div></div>
+      <div class="stat-item"><div class="stat-num">📱🖥️</div><div class="stat-label">All Devices</div></div>
+      <div class="stat-item"><div class="stat-num">1P</div><div class="stat-label">Single Player</div></div>
+    </div>
+
+    <div class="section-title">🔥 Featured Action Games</div>
+    <p class="section-desc">Top-rated 1-player action picks right now</p>
+    <div class="game-grid">
+      <!-- Featured action cards -->
+      <div class="game-card action" onclick="openModal('Raft Wars','⚓','Battle enemies on rafts using a powerful cannon! A classic physics-based action shooter.','action','both','raft-wars.com')">
+        <div class="game-thumb"><div class="emoji">⚓</div></div>
+        <div class="game-info">
+          <div class="game-name">Raft Wars</div>
+          <div class="game-desc">Battle enemies on rafts using a powerful cannon!</div>
+          <div class="game-meta">
+            <span class="tag tag-action">Action</span>
+            <span class="tag tag-both">📱🖥️</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Dumb Ways to Die','💀','Hilariously stupid mini-challenges — survive the dumbest scenarios imaginable!','funny','both','dumbwaystodie.com')">
+        <div class="game-thumb"><div class="emoji">💀</div></div>
+        <div class="game-info">
+          <div class="game-name">Dumb Ways to Die</div>
+          <div class="game-desc">Survive the dumbest scenarios imaginable!</div>
+          <div class="game-meta">
+            <span class="tag tag-funny">Funny</span>
+            <span class="tag tag-both">📱🖥️</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Zombotron','🧟','Blast through hordes of zombies in a ruined sci-fi world. Epic side-scrolling action!','action','pc','armorgames.com/play/zombotron')">
+        <div class="game-thumb"><div class="emoji">🧟</div></div>
+        <div class="game-info">
+          <div class="game-name">Zombotron</div>
+          <div class="game-desc">Blast through hordes of zombies in a ruined sci-fi world!</div>
+          <div class="game-meta">
+            <span class="tag tag-action">Action</span>
+            <span class="tag tag-pc">🖥️ PC</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br>
+    <div class="section-title">😂 Top Funny Picks</div>
+    <p class="section-desc">Games that will make you laugh out loud</p>
+    <div class="game-grid">
+      <div class="game-card funny" onclick="openModal('Getting Over It','⛏️','Rage-inducing but hilarious — climb a mountain with just a hammer and a pot!','funny','both','gettingoverit.com')">
+        <div class="game-thumb"><div class="emoji">⛏️</div></div>
+        <div class="game-info">
+          <div class="game-name">Getting Over It</div>
+          <div class="game-desc">Rage-inducing but hilarious — climb a mountain with a hammer!</div>
+          <div class="game-meta">
+            <span class="tag tag-funny">Funny</span>
+            <span class="tag tag-both">📱🖥️</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Goat Simulator','🐐','Be the worst goat possible. Break everything. Earn points for chaos!','funny','both','goat-simulator.com')">
+        <div class="game-thumb"><div class="emoji">🐐</div></div>
+        <div class="game-info">
+          <div class="game-name">Goat Simulator</div>
+          <div class="game-desc">Be the worst goat possible. Break everything!</div>
+          <div class="game-meta">
+            <span class="tag tag-funny">Funny</span>
+            <span class="tag tag-both">📱🖥️</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Ragdoll Physics','🪆','Fling a ragdoll around and watch the hilarious physics chaos unfold!','funny','both','poki.com')">
+        <div class="game-thumb"><div class="emoji">🪆</div></div>
+        <div class="game-info">
+          <div class="game-name">Ragdoll Physics</div>
+          <div class="game-desc">Fling a ragdoll and watch hilarious physics chaos!</div>
+          <div class="game-meta">
+            <span class="tag tag-funny">Funny</span>
+            <span class="tag tag-both">📱🖥️</span>
+            <span class="tag tag-1p">1 Player</span>
+            <button class="play-btn">▶ PLAY</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== ACTION SECTION ====== -->
+  <section id="action" class="section">
+    <div class="section-title">⚔️ Action Games</div>
+    <p class="section-desc">1-player action games for phone & PC — fight, shoot, survive!</p>
+
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="🔍 Search action games..." oninput="filterCards(this,'action-grid')">
+    </div>
+
+    <div class="game-grid" id="action-grid">
+
+      <div class="game-card action" onclick="openModal('Zombotron','🧟','Blast through hordes of zombies in a ruined sci-fi world. Epic side-scrolling action shooter with upgrades!','action','pc','armorgames.com/play/zombotron')">
+        <div class="game-thumb"><div class="emoji">🧟</div></div>
+        <div class="game-info"><div class="game-name">Zombotron</div><div class="game-desc">Blast through zombie hordes in a sci-fi world!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Raft Wars','⚓','Battle enemies on rafts using a powerful cannon. Physics-based turn-by-turn shooting!','action','both','miniclip.com/games/raft-wars')">
+        <div class="game-thumb"><div class="emoji">⚓</div></div>
+        <div class="game-info"><div class="game-name">Raft Wars</div><div class="game-desc">Battle enemies on rafts with a cannon!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Bullet Force','🔫','Tactical first-person shooter with multiple weapons and maps — right in your browser!','action','both','poki.com/en/g/bullet-force-multiplayer')">
+        <div class="game-thumb"><div class="emoji">🔫</div></div>
+        <div class="game-info"><div class="game-name">Bullet Force</div><div class="game-desc">Tactical FPS with weapons and maps!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Run 3','🏃','Sprint through tunnels in space as they collapse around you. Endless runner action!','action','both','coolmathgames.com/0-run-3')">
+        <div class="game-thumb"><div class="emoji">🏃</div></div>
+        <div class="game-info"><div class="game-name">Run 3</div><div class="game-desc">Sprint through collapsing space tunnels!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Stickman Hook','🕷️','Swing like Spider-Man! Grapple and fly through levels as a stickman hero.','action','both','poki.com/en/g/stickman-hook')">
+        <div class="game-thumb"><div class="emoji">🕷️</div></div>
+        <div class="game-info"><div class="game-name">Stickman Hook</div><div class="game-desc">Swing through levels like Spider-Man!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Ninja Arashi','🥷','Stealth-action platformer — dodge traps, slice enemies, and reach the end!','action','mobile','play.google.com/store/apps/details?id=com.bggames.ninjaarashi')">
+        <div class="game-thumb"><div class="emoji">🥷</div></div>
+        <div class="game-info"><div class="game-name">Ninja Arashi</div><div class="game-desc">Stealth platformer — dodge traps, slice enemies!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-mobile">📱 Mobile</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Super Smash Flash 2','👊','Epic platform fighter with iconic game characters — all in your browser!','action','pc','supersmashflash.com')">
+        <div class="game-thumb"><div class="emoji">👊</div></div>
+        <div class="game-info"><div class="game-name">Super Smash Flash 2</div><div class="game-desc">Epic platform fighter with iconic characters!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Sift Heads','🎯','Underworld hitman game — complete missions and take out your targets!','action','pc','siftheads.com')">
+        <div class="game-thumb"><div class="emoji">🎯</div></div>
+        <div class="game-info"><div class="game-name">Sift Heads</div><div class="game-desc">Underworld hitman — complete sneaky missions!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Geometry Dash','🔷','Fast-paced rhythm platformer — jump to the beat and avoid deadly spikes!','action','both','geometrydash.com')">
+        <div class="game-thumb"><div class="emoji">🔷</div></div>
+        <div class="game-info"><div class="game-name">Geometry Dash</div><div class="game-desc">Rhythm platformer — jump to the beat!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card action" onclick="openModal('Fireboy & Watergirl','🔥','Control both characters solo! Navigate fire and water temple puzzles.','action','both','coolmathgames.com/0-fireboy-and-watergirl-in-the-forest-temple')">
+        <div class="game-thumb"><div class="emoji">🔥</div></div>
+        <div class="game-info"><div class="game-name">Fireboy & Watergirl</div><div class="game-desc">Solo puzzle-action through elemental temples!</div>
+        <div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====== FUNNY SECTION ====== -->
+  <section id="funny" class="section">
+    <div class="section-title">😂 Funny Games</div>
+    <p class="section-desc">Hilarious, weird, and ridiculous games that'll make you lose it!</p>
+
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="🔍 Search funny games..." oninput="filterCards(this,'funny-grid')">
+    </div>
+
+    <div class="game-grid" id="funny-grid">
+
+      <div class="game-card funny" onclick="openModal('Dumb Ways to Die','💀','Complete hilariously dumb mini-challenges without dying in stupid ways!','funny','both','dumbwaystodie.com')">
+        <div class="game-thumb"><div class="emoji">💀</div></div>
+        <div class="game-info"><div class="game-name">Dumb Ways to Die</div><div class="game-desc">Survive dumb mini-challenges without dying!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Goat Simulator','🐐','Be the worst goat ever — headbutt people, cause chaos, and earn absurd points!','funny','both','goat-simulator.com')">
+        <div class="game-thumb"><div class="emoji">🐐</div></div>
+        <div class="game-info"><div class="game-name">Goat Simulator</div><div class="game-desc">Be the most destructive goat ever!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Getting Over It','⛏️','A frustratingly funny game — climb a mountain using ONLY a hammer. Rage guaranteed!','funny','both','gettingoverit.com')">
+        <div class="game-thumb"><div class="emoji">⛏️</div></div>
+        <div class="game-info"><div class="game-name">Getting Over It</div><div class="game-desc">Climb a mountain with just a hammer. Rage!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Happy Wheels','🩸','Ragdoll physics + deadly obstacle courses = the funniest carnage ever!','funny','pc','totaljerkface.com/happy-wheels')">
+        <div class="game-thumb"><div class="emoji">🩸</div></div>
+        <div class="game-info"><div class="game-name">Happy Wheels</div><div class="game-desc">Ragdoll carnage through insane obstacle courses!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-pc">🖥️ PC</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Ragdoll Physics','🪆','Throw a floppy ragdoll around and watch the pure physics chaos!','funny','both','poki.com/en/g/ragdoll-physics')">
+        <div class="game-thumb"><div class="emoji">🪆</div></div>
+        <div class="game-info"><div class="game-name">Ragdoll Physics</div><div class="game-desc">Fling a floppy ragdoll into pure chaos!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('I Am Fish','🐟','Control a fish in a bowl trying to reach the ocean — absolutely ridiculous!','funny','both','steamcommunity.com/app/1360570')">
+        <div class="game-thumb"><div class="emoji">🐟</div></div>
+        <div class="game-info"><div class="game-name">I Am Fish</div><div class="game-desc">Guide a fish in a bowl to the ocean!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Fall Guys','👑','Chaotic obstacle races with wobbly bean characters. Fall, laugh, repeat!','funny','both','fallguys.com')">
+        <div class="game-thumb"><div class="emoji">👑</div></div>
+        <div class="game-info"><div class="game-name">Fall Guys</div><div class="game-desc">Wobbly bean obstacle races — fall and laugh!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Burger Cats','🐱','Cats in burgers causing absolute food chaos. Yes, this is real!','funny','mobile','poki.com')">
+        <div class="game-thumb"><div class="emoji">🐱</div></div>
+        <div class="game-info"><div class="game-name">Burger Cats</div><div class="game-desc">Cats in burgers causing food chaos!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-mobile">📱 Mobile</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Surgeon Simulator','🩺','Perform surgery with ridiculously uncontrollable hands. Pure comedy!','funny','pc','bossa-studios.itch.io/surgeon-simulator')">
+        <div class="game-thumb"><div class="emoji">🩺</div></div>
+        <div class="game-info"><div class="game-name">Surgeon Simulator</div><div class="game-desc">Perform surgery with hilariously bad controls!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-pc">🖥️ PC</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+      <div class="game-card funny" onclick="openModal('Octodad','🐙','You are a dad who is secretly an octopus. Flail around and try to act normal!','funny','both','younghorses.com/octodad')">
+        <div class="game-thumb"><div class="emoji">🐙</div></div>
+        <div class="game-info"><div class="game-name">Octodad</div><div class="game-desc">Secretly an octopus dad — try to act normal!</div>
+        <div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><span class="tag tag-1p">1P</span><button class="play-btn">▶ PLAY</button></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====== ALL GAMES SECTION ====== -->
+  <section id="all" class="section">
+    <div class="section-title">🎮 All Games</div>
+    <p class="section-desc">Every game in one place — action, funny, and more!</p>
+
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="🔍 Search all games..." oninput="filterCards(this,'all-grid')">
+    </div>
+
+    <div class="game-grid" id="all-grid">
+
+      <!-- ACTION -->
+      <div class="game-card action" onclick="openModal('Raft Wars','⚓','Battle enemies on rafts using a powerful cannon!','action','both','miniclip.com/games/raft-wars')"><div class="game-thumb"><div class="emoji">⚓</div></div><div class="game-info"><div class="game-name">Raft Wars</div><div class="game-desc">Battle on rafts with a cannon!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Zombotron','🧟','Blast through zombie hordes in a sci-fi world!','action','pc','armorgames.com')"><div class="game-thumb"><div class="emoji">🧟</div></div><div class="game-info"><div class="game-name">Zombotron</div><div class="game-desc">Zombie shooter in a sci-fi world!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Run 3','🏃','Sprint through collapsing space tunnels!','action','both','coolmathgames.com')"><div class="game-thumb"><div class="emoji">🏃</div></div><div class="game-info"><div class="game-name">Run 3</div><div class="game-desc">Sprint through collapsing space tunnels!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Stickman Hook','🕷️','Swing like Spider-Man through levels!','action','both','poki.com')"><div class="game-thumb"><div class="emoji">🕷️</div></div><div class="game-info"><div class="game-name">Stickman Hook</div><div class="game-desc">Swing through levels like Spider-Man!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Geometry Dash','🔷','Rhythm platformer — jump to the beat!','action','both','geometrydash.com')"><div class="game-thumb"><div class="emoji">🔷</div></div><div class="game-info"><div class="game-name">Geometry Dash</div><div class="game-desc">Jump to the beat, avoid spikes!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Ninja Arashi','🥷','Stealth platformer — slice enemies, dodge traps!','action','mobile','play.google.com')"><div class="game-thumb"><div class="emoji">🥷</div></div><div class="game-info"><div class="game-name">Ninja Arashi</div><div class="game-desc">Stealth ninja platformer action!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-mobile">📱 Mobile</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Bullet Force','🔫','Tactical FPS right in your browser!','action','both','poki.com')"><div class="game-thumb"><div class="emoji">🔫</div></div><div class="game-info"><div class="game-name">Bullet Force</div><div class="game-desc">Browser tactical FPS shooter!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Super Smash Flash 2','👊','Epic platform fighter with iconic characters!','action','pc','supersmashflash.com')"><div class="game-thumb"><div class="emoji">👊</div></div><div class="game-info"><div class="game-name">Super Smash Flash 2</div><div class="game-desc">Iconic platform fighter in browser!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Fireboy & Watergirl','🔥','Elemental temple puzzle-action!','action','both','coolmathgames.com')"><div class="game-thumb"><div class="emoji">🔥</div></div><div class="game-info"><div class="game-name">Fireboy & Watergirl</div><div class="game-desc">Solo elemental temple puzzles!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card action" onclick="openModal('Sift Heads','🎯','Underworld hitman missions!','action','pc','siftheads.com')"><div class="game-thumb"><div class="emoji">🎯</div></div><div class="game-info"><div class="game-name">Sift Heads</div><div class="game-desc">Complete sneaky hitman missions!</div><div class="game-meta"><span class="tag tag-action">Action</span><span class="tag tag-pc">🖥️ PC</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <!-- FUNNY -->
+      <div class="game-card funny" onclick="openModal('Dumb Ways to Die','💀','Survive hilariously dumb mini-challenges!','funny','both','dumbwaystodie.com')"><div class="game-thumb"><div class="emoji">💀</div></div><div class="game-info"><div class="game-name">Dumb Ways to Die</div><div class="game-desc">Survive hilariously dumb challenges!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Goat Simulator','🐐','Be the worst goat. Cause chaos!','funny','both','goat-simulator.com')"><div class="game-thumb"><div class="emoji">🐐</div></div><div class="game-info"><div class="game-name">Goat Simulator</div><div class="game-desc">Be the most destructive goat ever!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Happy Wheels','🩸','Ragdoll carnage through deadly courses!','funny','pc','totaljerkface.com')"><div class="game-thumb"><div class="emoji">🩸</div></div><div class="game-info"><div class="game-name">Happy Wheels</div><div class="game-desc">Ragdoll carnage, obstacle madness!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-pc">🖥️ PC</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Getting Over It','⛏️','Climb a mountain with just a hammer!','funny','both','gettingoverit.com')"><div class="game-thumb"><div class="emoji">⛏️</div></div><div class="game-info"><div class="game-name">Getting Over It</div><div class="game-desc">Climb mountains with only a hammer!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Ragdoll Physics','🪆','Throw ragdolls into pure chaos!','funny','both','poki.com')"><div class="game-thumb"><div class="emoji">🪆</div></div><div class="game-info"><div class="game-name">Ragdoll Physics</div><div class="game-desc">Fling ragdolls into hilarious chaos!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Surgeon Simulator','🩺','Perform surgery with terrible controls!','funny','pc','bossa-studios.itch.io')"><div class="game-thumb"><div class="emoji">🩺</div></div><div class="game-info"><div class="game-name">Surgeon Simulator</div><div class="game-desc">Surgery with hilariously bad controls!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-pc">🖥️ PC</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Octodad','🐙','Secret octopus dad tries to act normal!','funny','both','younghorses.com')"><div class="game-thumb"><div class="emoji">🐙</div></div><div class="game-info"><div class="game-name">Octodad</div><div class="game-desc">Secret octopus dad tries to act normal!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Fall Guys','👑','Wobbly bean obstacle races!','funny','both','fallguys.com')"><div class="game-thumb"><div class="emoji">👑</div></div><div class="game-info"><div class="game-name">Fall Guys</div><div class="game-desc">Wobbly bean obstacle races!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('I Am Fish','🐟','Fish in a bowl trying to reach the ocean!','funny','both','steamcommunity.com')"><div class="game-thumb"><div class="emoji">🐟</div></div><div class="game-info"><div class="game-name">I Am Fish</div><div class="game-desc">Fish in a bowl escaping to the ocean!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-both">📱🖥️</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+      <div class="game-card funny" onclick="openModal('Burger Cats','🐱','Cats in burgers causing food chaos!','funny','mobile','poki.com')"><div class="game-thumb"><div class="emoji">🐱</div></div><div class="game-info"><div class="game-name">Burger Cats</div><div class="game-desc">Cats in burgers — food chaos!</div><div class="game-meta"><span class="tag tag-funny">Funny</span><span class="tag tag-mobile">📱 Mobile</span><button class="play-btn">▶ PLAY</button></div></div></div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close-x" onclick="closeModal()">✕</button>
+    <div class="modal-icon" id="m-icon">🎮</div>
+    <div class="modal-title" id="m-title">Game Name</div>
+    <div class="modal-desc" id="m-desc">Description</div>
+    <div class="game-meta" style="justify-content:center;margin-bottom:20px;" id="m-tags"></div>
+    <div class="modal-actions">
+      <a class="btn-play-now" id="m-link" target="_blank" rel="noopener">▶ PLAY NOW</a>
+      <button class="btn-close" onclick="closeModal()">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  Made with ❤️ by <span>DH-SK SITE</span> · All games free · Phone &amp; PC · 1 Player
+</footer>
+
+<script>
+  // ===== TAB SWITCHING =====
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ===== MODAL =====
+  function openModal(name, icon, desc, type, platform, url) {
+    document.getElementById('m-icon').textContent = icon;
+    document.getElementById('m-title').textContent = name;
+    document.getElementById('m-desc').textContent = desc;
+
+    var tagsDiv = document.getElementById('m-tags');
+    var typeTag = type === 'action' ? 'tag-action' : 'tag-funny';
+    var typeLabel = type === 'action' ? '⚔️ Action' : '😂 Funny';
+    var platformTag = platform === 'both' ? 'tag-both' : platform === 'mobile' ? 'tag-mobile' : 'tag-pc';
+    var platformLabel = platform === 'both' ? '📱🖥️ Phone & PC' : platform === 'mobile' ? '📱 Mobile' : '🖥️ PC';
+    tagsDiv.innerHTML =
+      '<span class="tag ' + typeTag + '">' + typeLabel + '</span>' +
+      '<span class="tag ' + platformTag + '">' + platformLabel + '</span>' +
+      '<span class="tag tag-1p">👤 1 Player</span>';
+
+    var link = document.getElementById('m-link');
+    link.href = 'https://' + url;
+    if (type === 'action') link.style.background = 'var(--neon-orange)';
+    else link.style.background = 'var(--neon-pink)';
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOutside(e) {
+    if (e.target.id === 'modal') closeModal();
+  }
+
+  // ===== SEARCH FILTER =====
+  function filterCards(input, gridId) {
+    var q = input.value.toLowerCase();
+    var cards = document.getElementById(gridId).querySelectorAll('.game-card');
+    cards.forEach(function(card) {
+      var text = card.textContent.toLowerCase();
+      card.style.display = text.includes(q) ? '' : 'none';
+    });
+  }
+
+  // ===== STAGGER ANIMATION =====
+  document.querySelectorAll('.game-card').forEach(function(card, i) {
+    card.style.animationDelay = (i * 0.06) + 's';
+  });
+</script>
+</body>
+</html>
